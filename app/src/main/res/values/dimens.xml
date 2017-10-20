@@ -1,0 +1,7 @@
+<resources>
+
+    <dimen name="main_padding">4dp</dimen>
+    <dimen name="item_padding">3dp</dimen>
+    <dimen name="item_height">100dp</dimen>
+
+</resources>
