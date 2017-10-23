@@ -6,9 +6,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.dvrbear.dvrcatdog.R;
+import com.dvrbear.dvrcatdog.interfaces.DataChangeEvent;
 import com.dvrbear.dvrcatdog.models.ItemModel;
 import com.squareup.picasso.Picasso;
 
@@ -18,10 +20,12 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
 	private List<ItemModel> modelList;
 	private Context context;
+	private DataChangeEvent notifyer;
 
-	public RecyclerViewAdapter(List<ItemModel> modelList, Context context){
+	public RecyclerViewAdapter(List<ItemModel> modelList, Context context, DataChangeEvent notifyer){
 		this.modelList = modelList;
 		this.context = context;
+		this.notifyer = notifyer;
 	}
 
 	public class ItemViewHolder extends RecyclerView.ViewHolder {
@@ -32,6 +36,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 			super(itemView);
 			itemTitle = (TextView) itemView.findViewById(R.id.item_title);
 			itemImage = (ImageView) itemView.findViewById(R.id.item_image);
+
 		}
 	}
 
@@ -48,6 +53,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
 	@Override
 	public void onBindViewHolder(ItemViewHolder viewHolder, int i) {
+		final int index = i;
 		viewHolder.itemTitle.setText(modelList.get(i).getTitle());
 		Picasso
 				.with(context)
@@ -55,6 +61,12 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 				.fit()
 				.centerInside()
 				.into(viewHolder.itemImage);
+		viewHolder.itemImage.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				notifyer.onItemClick(modelList.get(index));
+			}
+		});
 	}
 
 	@Override
@@ -67,6 +79,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 			modelList.clear();
 			modelList.addAll(newList);
 			notifyDataSetChanged();
+			notifyer.onDataLoaded();
 		}
 	}
 }

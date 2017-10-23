@@ -12,6 +12,7 @@ public class NavigatorController {
 
     private FragmentManager fragmentManager;
     private BaseFragment newFragment;
+	private boolean isFirstRun = true;
 
     private int fragmentLayer = R.id.fragment_layer;
 
@@ -37,4 +38,11 @@ public class NavigatorController {
 		}
 	}
 
+	public boolean isFirstRun() {
+		return isFirstRun;
+	}
+
+	public void setFirstRun(boolean firstRun) {
+		isFirstRun = firstRun;
+	}
 }

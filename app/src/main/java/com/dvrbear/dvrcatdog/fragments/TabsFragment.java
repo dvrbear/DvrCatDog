@@ -1,45 +1,39 @@
 package com.dvrbear.dvrcatdog.fragments;
 
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.design.widget.TabLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.dvrbear.dvrcatdog.R;
 import com.dvrbear.dvrcatdog.adapters.RecyclerViewAdapter;
 import com.dvrbear.dvrcatdog.controllers.RestController;
+import com.dvrbear.dvrcatdog.interfaces.DataChangeEvent;
 import com.dvrbear.dvrcatdog.models.ItemModel;
 import com.dvrbear.dvrcatdog.utils.CONSTANTS;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class TabsFragment extends BaseFragment{
+public class TabsFragment extends BaseFragment implements DataChangeEvent{
 
 	private RestController restController;
 	private TabLayout tabLayout;
 	private LinearLayoutManager linearLayoutManager;
 	private RecyclerView recyclerView;
 	private RecyclerViewAdapter recyclerViewAdapter;
-	private Parcelable listState;
 
 	private List<ItemModel> modelList;
-	private int[] scrollPositions = new int[] {0, 0};
-
 	private int currentTabLayout = 0;
-	private int lastScrollPosition = 0;
-	private int newScrollPosition = 0;
-
-	private boolean flag = true;
 
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, final Bundle savedInstanceState) {
 		rootView = inflater.inflate(R.layout.tabs_fragment, container, false);
 
 		recyclerView = (RecyclerView) rootView.findViewById(R.id.rv);
@@ -47,97 +41,80 @@ public class TabsFragment extends BaseFragment{
 
 		tabLayout.addTab(tabLayout.newTab().setText(CONSTANTS.cat));
 		tabLayout.addTab(tabLayout.newTab().setText(CONSTANTS.dog));
+		tabLayout.getTabAt(global.getTabPositions()).select();
 		tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
 			@Override
 			public void onTabSelected(TabLayout.Tab tab) {
 				currentTabLayout = tab.getPosition();
-				scrollPositions[currentTabLayout == 0 ? 1 : 0] = linearLayoutManager.findLastCompletelyVisibleItemPosition();
+				global.setTabPositions(currentTabLayout);
 				restController.getDataFromServer(CONSTANTS.pets[currentTabLayout]);
 				scrollToLastPosition();
 			}
-
 			@Override
 			public void onTabUnselected(TabLayout.Tab tab) {}
-
 			@Override
 			public void onTabReselected(TabLayout.Tab tab) {}
 		});
 
-		recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+		recyclerView.setOnTouchListener(new View.OnTouchListener() {
 			@Override
-			public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-				super.onScrollStateChanged(recyclerView, newState);
-				scrollPositions[currentTabLayout == 1 ? 1 : 0] = linearLayoutManager.findLastCompletelyVisibleItemPosition();
+			public boolean onTouch(View v, MotionEvent event) {
+				if(event.getAction() == MotionEvent.ACTION_UP){
+					saveCurrentPosition();
+				}
+				return false;
+			}
+		});
+
+		recyclerView.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+
 			}
 		});
 
 		modelList = new ArrayList<>();
 		linearLayoutManager = new LinearLayoutManager(getActivity());
-		recyclerViewAdapter = new RecyclerViewAdapter(modelList, getActivity());
+		recyclerViewAdapter = new RecyclerViewAdapter(modelList, getActivity(), this);
 		recyclerView.setLayoutManager(linearLayoutManager);
 		recyclerView.setAdapter(recyclerViewAdapter);
 		restController = new RestController(recyclerViewAdapter);
 		restController.getDataFromServer(CONSTANTS.pets[currentTabLayout]);
 
-//		scrollToLastPosition();
-
-		rootView.post(new Runnable() {
-			@Override
-			public void run() {
-				post();
-			}
-		});
 		return rootView;
 	}
 
-	private void post(){
-		recyclerView.scrollToPosition(13);
-	}
-
-	@Override
-	public void onResume() {
-		super.onResume();
-		recyclerView.scrollToPosition(13);
+	private void saveCurrentPosition(){
+		currentTabLayout = tabLayout.getSelectedTabPosition();
+		int scrollPosition = linearLayoutManager.findLastCompletelyVisibleItemPosition();
+		global.setScrollPositions(currentTabLayout, scrollPosition);
 	}
 
 	private void scrollToLastPosition(){
 		if(recyclerView != null) {
-			recyclerView.scrollToPosition(13);
-//			recyclerView.scrollToPosition(0);
-//			recyclerView.post(new Runnable() {
-//				@Override
-//				public void run() {
-//					Log.e("LOG1", "pos = " + scrollPositions[currentTabLayout]);
-////					recyclerView.scrollToPosition(scrollPositions[currentTabLayout]);
-//					recyclerView.scrollToPosition(13);
-//				}
-//			});
+			currentTabLayout = tabLayout.getSelectedTabPosition();
+			recyclerView.smoothScrollToPosition(0);
+			recyclerView.post(new Runnable() {
+				@Override
+				public void run() {
+					recyclerView.scrollToPosition(global.getScrollPositions(currentTabLayout));
+				}
+			});
 		}
 	}
+	@Override
+	public void onDataLoaded() {
+		scrollToLastPosition();
+	}
 
-//	@Override
-//	public void onSaveInstanceState(Bundle state) {
-//		super.onSaveInstanceState(state);
-//
-//		listState = recyclerView.getLayoutManager().onSaveInstanceState();
-//
-////		listState = linearLayoutManager.onSaveInstanceState();
-//		state.putParcelable(CONSTANTS.STATE_KEY, listState);
-//	}
-//
-//	@Override
-//	public void onViewStateRestored(Bundle savedInstanceState) {
-//		super.onViewStateRestored(savedInstanceState);
-//		if(savedInstanceState != null)
-//			listState = savedInstanceState.getParcelable(CONSTANTS.STATE_KEY);
-//	}
-//
-//	@Override
-//	public void onResume() {
-//		super.onResume();
-//		if (listState != null) {
-//			recyclerView.getLayoutManager().onRestoreInstanceState(listState);
-////			linearLayoutManager.onRestoreInstanceState(listState);
-//		}
-//	}
+	@Override
+	public void onItemClick(ItemModel itemModel) {
+		global.setItemModel(itemModel);
+		navigator.addNewFragment(CONSTANTS.FRAG_DETAILS);
+	}
+
+	@Override
+	public void onSaveInstanceState(Bundle outState) {
+
+	}
 }

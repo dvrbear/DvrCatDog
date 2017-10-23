@@ -9,7 +9,6 @@ import com.dvrbear.dvrcatdog.MainApplication;
 import com.dvrbear.dvrcatdog.controllers.GlobalController;
 import com.dvrbear.dvrcatdog.controllers.NavigatorController;
 
-
 public class BaseFragment extends Fragment{
 
     public GlobalController global;
@@ -22,4 +21,6 @@ public class BaseFragment extends Fragment{
         navigator = ((MainApplication) getActivity().getApplication()).getNavigatorController();
         global = ((MainApplication) getActivity().getApplication()).getGlobalController();
     }
+
+
 }

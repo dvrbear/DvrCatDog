@@ -17,7 +17,10 @@ public class MainActivity extends AppCompatActivity {
 		setContentView(R.layout.main);
 
 		navigator = ((MainApplication) getApplication()).getNavigatorController();
-		navigator.setFragmentManagers(getFragmentManager());
-		navigator.addNewFragment(CONSTANTS.FRAG_TABS);
+		if(navigator.isFirstRun()) {
+			navigator.setFirstRun(false);
+			navigator.setFragmentManagers(getFragmentManager());
+			navigator.addNewFragment(CONSTANTS.FRAG_TABS);
+		}
 	}
 }
