@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -81,9 +80,6 @@ public class TabsFragment extends BaseFragment implements DataChangeEvent{
 		recyclerView.setAdapter(recyclerViewAdapter);
 		restController = new RestController(recyclerViewAdapter);
 		restController.getDataFromServer(CONSTANTS.pets[currentTabLayout]);
-
-		navigator = ((MainApplication) getActivity().getApplication()).getNavigatorController();
-		global = ((MainApplication) getActivity().getApplication()).getGlobalController();
 
 		return rootView;
 	}
