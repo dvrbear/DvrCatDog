@@ -9,7 +9,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.dvrbear.dvrcatdog.MainApplication;
 import com.dvrbear.dvrcatdog.R;
 import com.dvrbear.dvrcatdog.adapters.RecyclerViewAdapter;
 import com.dvrbear.dvrcatdog.controllers.RestController;
@@ -111,10 +110,5 @@ public class TabsFragment extends BaseFragment implements DataChangeEvent{
 	public void onItemClick(ItemModel itemModel) {
 		global.setItemModel(itemModel);
 		navigator.addNewFragment(CONSTANTS.FRAG_DETAILS);
-	}
-
-	@Override
-	public void onSaveInstanceState(Bundle outState) {
-
 	}
 }

@@ -4,6 +4,6 @@ import android.util.Log;
 
 public class G {
     public static void Log(Object str){
-        Log.e(" - - - - - - - - | ","" + str);
+        Log.e(" - - - - - - - - > ","" + str);
     }
 }

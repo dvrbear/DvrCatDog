@@ -22,5 +22,4 @@ public class BaseFragment extends Fragment{
         global = ((MainApplication) getActivity().getApplication()).getGlobalController();
     }
 
-
 }

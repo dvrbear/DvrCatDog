@@ -10,8 +10,6 @@ public class CONSTANTS {
 	public static final String dog = "dog";
 	public static final String[] pets = {cat, dog};
 
-	public static final String STATE_KEY = "state_key";
-
 	public static final String FRAG_TABS = "tabs_fragment";
 	public static final String FRAG_DETAILS = "details_fragment";
 
