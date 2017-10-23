@@ -36,7 +36,12 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 			super(itemView);
 			itemTitle = (TextView) itemView.findViewById(R.id.item_title);
 			itemImage = (ImageView) itemView.findViewById(R.id.item_image);
-
+			itemView.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					notifyer.onItemClick(modelList.get(getAdapterPosition()));
+				}
+			});
 		}
 	}
 
@@ -53,7 +58,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
 	@Override
 	public void onBindViewHolder(ItemViewHolder viewHolder, int i) {
-		final int index = i;
 		viewHolder.itemTitle.setText(modelList.get(i).getTitle());
 		Picasso
 				.with(context)
@@ -61,12 +65,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 				.fit()
 				.centerInside()
 				.into(viewHolder.itemImage);
-		viewHolder.itemImage.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				notifyer.onItemClick(modelList.get(index));
-			}
-		});
 	}
 
 	@Override

@@ -10,6 +10,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.dvrbear.dvrcatdog.MainApplication;
 import com.dvrbear.dvrcatdog.R;
 import com.dvrbear.dvrcatdog.adapters.RecyclerViewAdapter;
 import com.dvrbear.dvrcatdog.controllers.RestController;
@@ -80,6 +81,9 @@ public class TabsFragment extends BaseFragment implements DataChangeEvent{
 		recyclerView.setAdapter(recyclerViewAdapter);
 		restController = new RestController(recyclerViewAdapter);
 		restController.getDataFromServer(CONSTANTS.pets[currentTabLayout]);
+
+		navigator = ((MainApplication) getActivity().getApplication()).getNavigatorController();
+		global = ((MainApplication) getActivity().getApplication()).getGlobalController();
 
 		return rootView;
 	}
